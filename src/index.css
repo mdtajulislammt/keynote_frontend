@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Pure White and Deep Black with Rich Emerald Green */
+    --background: 0 0% 100%;
+    --foreground: 160 25% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 160 25% 8%;
+    
+    /* Emerald Green Primary */
+    --primary: 156 84% 35%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 152 40% 96%;
+    --secondary-foreground: 160 30% 12%;
+    
+    --muted: 150 20% 96%;
+    --muted-foreground: 160 10% 40%;
+    
+    --accent: 152 45% 94%;
+    --accent-foreground: 156 84% 25%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 150 15% 88%;
+    --input: 150 15% 88%;
+    --ring: 156 84% 35%;
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    /* Pitch Obsidian Black with Electric Emerald Accents */
+    --background: 150 20% 4%;
+    --foreground: 0 0% 98%;
+    
+    --card: 150 16% 7%;
+    --card-foreground: 0 0% 98%;
+    
+    /* Bright Neon/Electric Emerald Primary */
+    --primary: 156 75% 45%;
+    --primary-foreground: 150 30% 4%;
+    
+    --secondary: 150 15% 12%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 150 12% 14%;
+    --muted-foreground: 150 10% 68%;
+    
+    --accent: 150 20% 14%;
+    --accent-foreground: 156 75% 55%;
+    
+    --destructive: 0 62.8% 45%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 150 15% 16%;
+    --input: 150 15% 16%;
+    --ring: 156 75% 45%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--background));
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Custom subtle dynamic scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary));
+  }
+}
