@@ -8,6 +8,7 @@ import { FileText, Calendar, Edit2, Trash2, User } from 'lucide-react';
 
 export interface NoteCardProps {
   note: Note;
+  onClick?: (note: Note) => void;
   onEdit?: (note: Note) => void;
   onDelete?: (noteId: string) => void;
   isAdminView?: boolean;
@@ -15,6 +16,7 @@ export interface NoteCardProps {
 
 export const NoteCard: React.FC<NoteCardProps> = ({
   note,
+  onClick,
   onEdit,
   onDelete,
   isAdminView = false,
@@ -24,8 +26,23 @@ export const NoteCard: React.FC<NoteCardProps> = ({
       ? note.userId.name
       : null;
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.key === 'Enter' || e.key === ' ') && onClick) {
+      e.preventDefault();
+      onClick(note);
+    }
+  };
+
   return (
-    <Card className="flex flex-col h-full bg-card hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-600/10 hover:-translate-y-1 transition-all duration-300 group">
+    <Card
+      onClick={() => onClick?.(note)}
+      onKeyDown={handleKeyDown}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      className={`flex flex-col h-full bg-card hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-600/10 hover:-translate-y-1 transition-all duration-300 group ${
+        onClick ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/50' : ''
+      }`}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -67,7 +84,10 @@ export const NoteCard: React.FC<NoteCardProps> = ({
               variant="ghost"
               size="icon"
               className="w-8 h-8 text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
-              onClick={() => onEdit(note)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(note);
+              }}
               title="Edit Note"
             >
               <Edit2 className="w-4 h-4" />
@@ -79,7 +99,10 @@ export const NoteCard: React.FC<NoteCardProps> = ({
               variant="ghost"
               size="icon"
               className="w-8 h-8 text-muted-foreground hover:text-destructive hover:bg-red-50 dark:hover:bg-red-950/40"
-              onClick={() => onDelete(note._id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(note._id);
+              }}
               title="Delete Note"
             >
               <Trash2 className="w-4 h-4" />

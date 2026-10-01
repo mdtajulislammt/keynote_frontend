@@ -71,30 +71,30 @@ export const NoteFormModal: React.FC<NoteFormModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? 'Edit Note' : 'Create New Note'}
+      title={isEditing ? 'Edit Note' : 'New Note'}
       description={
         isEditing
-          ? 'Update the title or content of your personal note.'
-          : 'Draft a private, secure note stored with compound index optimization.'
+          ? 'Update your personal note title or content.'
+          : 'Write down your thoughts, ideas, or reminders.'
       }
-      maxWidth="lg"
+      maxWidth="xl"
     >
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 pt-1">
         <Input
           label="Title"
-          placeholder="e.g. Zero Trust Architecture Checklist"
+          placeholder="Note title..."
           error={errors.title?.message}
           {...register('title')}
         />
 
         <div className="space-y-1.5">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
-            Note Content
+          <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Content
           </label>
           <textarea
-            rows={6}
-            placeholder="Write your secure note content here..."
-            className="flex w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors resize-y font-sans"
+            rows={8}
+            placeholder="Write your note content here..."
+            className="flex w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 transition-colors resize-y font-sans leading-relaxed"
             {...register('content')}
           />
           {errors.content?.message && (
@@ -106,7 +106,7 @@ export const NoteFormModal: React.FC<NoteFormModalProps> = ({
           <Button type="button" variant="outline" size="sm" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>
-          <Button type="submit" size="sm" isLoading={isLoading}>
+          <Button type="submit" size="sm" isLoading={isLoading} className="font-semibold shadow-xs">
             {isEditing ? 'Save Changes' : 'Create Note'}
           </Button>
         </div>

@@ -22,17 +22,17 @@ export const InterestGroupCard: React.FC<InterestGroupCardProps> = ({ item }) =>
               {item.interest}
             </CardTitle>
           </div>
-          <Badge variant="secondary" className="gap-1 font-mono font-bold text-xs">
+          <Badge variant="secondary" className="gap-1 font-semibold text-xs">
             <Users className="w-3.5 h-3.5 text-emerald-600" />
-            <span>{item.totalUsers} {item.totalUsers === 1 ? 'user' : 'users'}</span>
+            <span>{item.totalUsers} {item.totalUsers === 1 ? 'member' : 'members'}</span>
           </Badge>
         </div>
       </CardHeader>
 
       <CardContent className="flex-1 pt-4">
         <div className="space-y-2.5">
-          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground block">
-            Associated Profiles:
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
+            Community Members:
           </span>
 
           <div className="divide-y divide-border/50">
@@ -47,9 +47,9 @@ export const InterestGroupCard: React.FC<InterestGroupCardProps> = ({ item }) =>
                 </div>
 
                 <Link
-                  to={`/analytics/user-posts?userId=${u._id}`}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline underline-offset-4 shrink-0 transition-colors"
-                  title="View user posts ($lookup)"
+                  to={`/posts?userId=${u._id}`}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline underline-offset-4 shrink-0 transition-colors"
+                  title={`View posts by ${u.name}`}
                 >
                   <span>Posts</span>
                   <ArrowRight className="w-3.5 h-3.5" />

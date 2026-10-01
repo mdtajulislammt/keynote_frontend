@@ -22,7 +22,7 @@ export const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }
         <h1 className="text-xl font-bold tracking-tight text-foreground">Access Denied (403 Forbidden)</h1>
         <p className="text-sm text-muted-foreground max-w-md mt-2 mb-6">
           This administrative resource is restricted. Your current account role is{' '}
-          <span className="font-semibold text-foreground uppercase">{user?.role || 'user'}</span>, which lacks sufficient RBAC privileges.
+          <span className="font-semibold text-foreground uppercase">{user?.role || 'user'}</span>, which does not have administrator permissions.
         </p>
         <div className="flex gap-3">
           <Link to="/notes">

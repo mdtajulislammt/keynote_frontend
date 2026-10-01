@@ -107,9 +107,9 @@ export const RegisterForm: React.FC = () => {
             />
 
             <Input
-              label="Interests (Comma-separated for analytics)"
-              placeholder="Cybersecurity, AI Safety, Cryptography"
-              helperText="These tags feed into MongoDB $unwind & $group aggregation analytics"
+              label="Your Interests & Topics"
+              placeholder="Technology, Design, Music, Gaming"
+              helperText="Add your favorite topics separated by commas to connect with members"
               error={errors.interestsRaw?.message}
               {...register('interestsRaw')}
             />

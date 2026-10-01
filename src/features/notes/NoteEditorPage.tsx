@@ -6,20 +6,23 @@ import { z } from 'zod';
 import { notesApi } from './notesApi';
 import { useAppDispatch } from '@/redux/hooks';
 import { createNoteThunk, updateNoteThunk } from './notesThunks';
-import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Loader } from '@/components/common/Loader';
-import { ArrowLeft, Save } from 'lucide-react';
+import {
+  ArrowLeft,
+  Save,
+  FileText,
+  Sparkles,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 const noteSchema = z.object({
   title: z
     .string()
     .trim()
-    .min(1, 'Title is required')
+    .min(1, 'Please give your note a title')
     .max(200, 'Title cannot exceed 200 characters'),
-  content: z.string().trim().min(1, 'Content is required'),
+  content: z.string().trim().min(1, 'Please write some content for your note'),
 });
 
 type NoteFormData = z.infer<typeof noteSchema>;
@@ -37,6 +40,7 @@ export const NoteEditorPage: React.FC = () => {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<NoteFormData>({
     resolver: zodResolver(noteSchema),
@@ -45,6 +49,10 @@ export const NoteEditorPage: React.FC = () => {
       content: '',
     },
   });
+
+  const contentValue = watch('content') || '';
+  const wordCount = contentValue.trim() ? contentValue.trim().split(/\s+/).length : 0;
+  const charCount = contentValue.length;
 
   useEffect(() => {
     if (!id) return;
@@ -79,8 +87,10 @@ export const NoteEditorPage: React.FC = () => {
     try {
       if (isEditing && id) {
         await dispatch(updateNoteThunk({ id, payload: data })).unwrap();
+        toast.success('Note updated successfully');
       } else {
         await dispatch(createNoteThunk(data)).unwrap();
+        toast.success('Note published to your workspace');
       }
       navigate('/notes');
     } catch {
@@ -90,71 +100,119 @@ export const NoteEditorPage: React.FC = () => {
     }
   };
 
+  // Keyboard shortcut Ctrl+S or Cmd+S to submit
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      handleSubmit(onSubmit)();
+    }
+  };
+
   if (isLoadingNote) {
     return <Loader text="Loading note details..." />;
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div className="flex items-center gap-3">
-        <Link to="/notes">
-          <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground font-semibold">
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Notes</span>
+    <div className="w-full max-w-5xl mx-auto space-y-6" onKeyDown={handleKeyDown}>
+      {/* Top Header & Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/70 pb-4">
+        <div className="flex items-center gap-3">
+          <Link to="/notes">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 text-muted-foreground hover:text-foreground h-9"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>All Notes</span>
+            </Button>
+          </Link>
+
+          <div className="h-4 w-px bg-border hidden sm:block" />
+
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-medium">
+              <Sparkles className="w-3 h-3 text-emerald-600" />
+              {isEditing ? 'Editing Note' : 'Drafting Note'}
+            </span>
+            <span>•</span>
+            <span className="font-mono">{wordCount} words</span>
+            <span>•</span>
+            <span className="font-mono">{charCount} characters</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5 self-end sm:self-auto">
+          <Link to="/notes">
+            <Button type="button" variant="ghost" size="sm" className="h-9 px-3 text-xs">
+              Discard
+            </Button>
+          </Link>
+
+          <Button
+            type="button"
+            onClick={handleSubmit(onSubmit)}
+            isLoading={isSubmitting}
+            size="sm"
+            className="h-9 px-4 text-xs font-semibold gap-1.5 shadow-sm"
+          >
+            <Save className="w-4 h-4" />
+            <span>{isEditing ? 'Save Changes' : 'Save Note'}</span>
           </Button>
-        </Link>
+        </div>
       </div>
 
-      <Card className="border border-border/90 shadow-md bg-card">
-        <CardHeader className="pb-5">
-          <CardTitle className="text-2xl font-extrabold tracking-tight">
-            {isEditing ? 'Edit Note' : 'Create New Note'}
-          </CardTitle>
-          <CardDescription className="text-sm">
-            {isEditing
-              ? 'Update the title and content of your existing note.'
-              : 'Write a new personal note with secure compound-index persistence.'}
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <Input
-              label="Note Title"
-              placeholder="e.g. Distributed Database Architecture Notes"
-              error={errors.title?.message}
+      {/* Editor Body */}
+      <div className="rounded-2xl border border-border/80 bg-card p-6 sm:p-8 shadow-xs space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Note Title Input */}
+          <div className="space-y-1">
+            <input
+              type="text"
+              autoFocus
+              placeholder="Note title..."
+              className="w-full text-2xl sm:text-3xl font-extrabold text-foreground placeholder:text-muted-foreground/40 bg-transparent border-0 outline-none focus:ring-0 p-0 transition-colors"
               {...register('title')}
             />
+            {errors.title?.message && (
+              <p className="text-xs text-destructive font-medium pt-1">{errors.title.message}</p>
+            )}
+          </div>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-semibold tracking-wide text-foreground">
-                Note Content
-              </label>
-              <textarea
-                rows={12}
-                placeholder="Write markdown or plain text note content..."
-                className="flex w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 resize-y font-sans leading-relaxed shadow-2xs"
-                {...register('content')}
-              />
-              {errors.content?.message && (
-                <p className="text-xs text-destructive font-medium">{errors.content.message}</p>
-              )}
+          <div className="h-px w-full bg-border/60" />
+
+          {/* Note Content Textarea */}
+          <div className="space-y-1">
+            <textarea
+              rows={16}
+              placeholder="Start writing your thoughts, ideas, plans, or research notes here..."
+              className="w-full text-base sm:text-lg text-foreground/90 placeholder:text-muted-foreground/40 bg-transparent border-0 outline-none focus:ring-0 p-0 leading-relaxed font-sans resize-y min-h-[360px]"
+              {...register('content')}
+            />
+            {errors.content?.message && (
+              <p className="text-xs text-destructive font-medium pt-1">{errors.content.message}</p>
+            )}
+          </div>
+
+          {/* Bottom Toolbar & Shortcuts */}
+          <div className="pt-4 border-t border-border/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-muted-foreground">
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1">
+                <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Plain text & markdown supported</span>
+              </span>
             </div>
 
-            <div className="flex justify-end gap-3 pt-5 border-t border-border">
-              <Link to="/notes">
-                <Button type="button" variant="outline" size="sm">
-                  Cancel
-                </Button>
-              </Link>
-              <Button type="submit" size="sm" isLoading={isSubmitting} className="gap-2 font-bold shadow-md shadow-emerald-700/20">
-                <Save className="w-4 h-4" />
-                <span>{isEditing ? 'Save Changes' : 'Publish Note'}</span>
-              </Button>
+            <div className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground/80">
+              <kbd className="px-1.5 py-0.5 rounded bg-muted border border-border text-foreground font-semibold">
+                Ctrl + S
+              </kbd>
+              <span>to quick save</span>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
+

@@ -36,14 +36,14 @@ export const ProfilePage: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-7">
+    <div className="w-full max-w-4xl mx-auto space-y-7">
       <div className="border-b border-border/80 pb-5 flex items-center justify-between">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
             Account Profile
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Your personal credentials, RBAC tier, and registered interest tags
+            Your personal account details, role permissions, and interest tags
           </p>
         </div>
 
@@ -73,7 +73,7 @@ export const ProfilePage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div className="p-4 rounded-xl border border-border bg-muted/20">
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">
-                RBAC Access Tier
+                Account Role
               </span>
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-emerald-600" />
@@ -96,7 +96,7 @@ export const ProfilePage: React.FC = () => {
 
           <div className="p-4 rounded-xl border border-border bg-muted/20">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-2">
-              Registered Interests ($unwind group targets)
+              Your Interests & Topics
             </span>
             <div className="flex flex-wrap gap-2">
               {user.interests && user.interests.length > 0 ? (
@@ -117,9 +117,9 @@ export const ProfilePage: React.FC = () => {
 
           <div className="p-4 rounded-xl border border-border bg-muted/20">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
-              Database Identifier
+              Account ID
             </span>
-            <span className="font-mono text-sm font-semibold text-foreground select-all">{user._id}</span>
+            <span className="font-mono text-xs sm:text-sm font-semibold text-foreground select-all">{user._id}</span>
           </div>
         </CardContent>
 

@@ -6,7 +6,7 @@ import { SearchBar } from '@/components/common/SearchBar';
 import { EmptyState } from '@/components/common/EmptyState';
 import { Loader } from '@/components/common/Loader';
 import { Button } from '@/components/ui/Button';
-import { PieChart, RefreshCw, Layers } from 'lucide-react';
+import { Compass, RefreshCw, Sparkles, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const InterestsView: React.FC = () => {
@@ -20,7 +20,7 @@ export const InterestsView: React.FC = () => {
       const res = await analyticsApi.getUsersByInterests();
       setData(res.data);
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Could not fetch interests analytics');
+      toast.error(err instanceof Error ? err.message : 'Could not fetch topics');
     } finally {
       setIsLoading(false);
     }
@@ -40,21 +40,24 @@ export const InterestsView: React.FC = () => {
     return interestMatch || userMatch;
   });
 
+  const totalMembers = data.reduce((acc, curr) => acc + curr.totalUsers, 0);
+
   return (
-    <div className="space-y-7">
+    <div className="space-y-6 w-full">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/80 pb-5">
         <div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              Interests Aggregation
+              Community Topics
             </h1>
-            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-              Scenario 1: $unwind + $group
+            <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+              <Sparkles className="w-3 h-3 text-emerald-600" />
+              Discover
             </span>
           </div>
           <p className="text-sm text-muted-foreground mt-1">
-            Real-time MongoDB aggregation pipeline mapping users grouped by shared technical interests
+            Explore topics and connect with community members who share your passions and skills.
           </p>
         </div>
 
@@ -62,46 +65,64 @@ export const InterestsView: React.FC = () => {
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
-            placeholder="Search by topic or user..."
+            placeholder="Search topic or member..."
             className="w-full sm:w-64"
           />
 
-          <Button variant="outline" size="sm" onClick={loadData} isLoading={isLoading} className="gap-1.5 font-semibold">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={loadData}
+            isLoading={isLoading}
+            className="gap-1.5 font-semibold shrink-0"
+          >
             <RefreshCw className="w-4 h-4 text-emerald-600" />
             <span>Refresh</span>
           </Button>
         </div>
       </div>
 
-      {/* Aggregation Pipeline Overview Card */}
-      <div className="bg-emerald-500/5 border border-emerald-500/30 p-5 rounded-xl space-y-2.5">
-        <div className="flex items-center gap-2 font-bold text-sm text-foreground">
-          <Layers className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-          <span>MongoDB Aggregation Architecture</span>
+      {/* Friendly Overview Banner */}
+      <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="space-y-1 max-w-2xl">
+          <div className="flex items-center gap-2 font-bold text-sm text-foreground">
+            <Compass className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span>Connect by Shared Passions</span>
+          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            Browse through community topics below to see what members are interested in. Click on any member to read their posts and see their contributions.
+          </p>
         </div>
-        <p className="text-sm text-foreground/80 leading-relaxed">
-          Executed with a single strictly optimized aggregation pipeline:{' '}
-          <code className="font-mono bg-white dark:bg-black/60 px-2 py-1 rounded-md text-xs font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
-            $unwind: &quot;$interests&quot; → $group: &#123; _id: &quot;$interests&quot;, totalUsers: &#123; $sum: 1 &#125;, users: &#123; $push: ... &#125; &#125; → $sort: &#123; totalUsers: -1 &#125;
-          </code>
-        </p>
+
+        <div className="flex items-center gap-3 shrink-0 self-stretch sm:self-auto justify-end">
+          <div className="px-3.5 py-2 rounded-lg bg-card border border-border/80 text-center">
+            <span className="block text-base font-bold text-foreground">{data.length}</span>
+            <span className="text-[11px] text-muted-foreground font-medium">Topics</span>
+          </div>
+          <div className="px-3.5 py-2 rounded-lg bg-card border border-border/80 text-center">
+            <span className="block text-base font-bold text-emerald-600 dark:text-emerald-400">
+              {totalMembers}
+            </span>
+            <span className="text-[11px] text-muted-foreground font-medium">Connections</span>
+          </div>
+        </div>
       </div>
 
       {/* Content Grid */}
       {isLoading ? (
-        <Loader text="Executing MongoDB aggregation pipeline..." />
+        <Loader text="Loading community topics..." />
       ) : filtered.length === 0 ? (
         <EmptyState
-          icon={PieChart}
-          title={searchTerm ? 'No matching interest groups' : 'No interest data available'}
+          icon={Users}
+          title={searchTerm ? 'No matching topics found' : 'No topics available yet'}
           description={
             searchTerm
-              ? `No interest groups match "${searchTerm}".`
-              : 'Add interests to user profiles during registration to populate this aggregation view.'
+              ? `No topics or members match "${searchTerm}". Try a different keyword.`
+              : 'Add your favorite topics and interests in your profile to connect with others.'
           }
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {filtered.map((item) => (
             <InterestGroupCard key={item.interest} item={item} />
           ))}
@@ -110,3 +131,4 @@ export const InterestsView: React.FC = () => {
     </div>
   );
 };
+

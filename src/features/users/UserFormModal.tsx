@@ -121,11 +121,11 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? `Edit User: ${userToEdit?.name}` : 'Create New User (Admin)'}
+      title={isEditing ? `Edit User: ${userToEdit?.name}` : 'Add New Member'}
       description={
         isEditing
-          ? 'Modify account credentials, role assignment, and interest tags.'
-          : 'Provision a new user account with designated role and permissions.'
+          ? 'Update account details, role assignment, and interest topics.'
+          : 'Add a new member to the workspace and assign their permissions.'
       }
       maxWidth="md"
     >
@@ -161,15 +161,15 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
             className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             {...register('role')}
           >
-            <option value="user">User (Standard Access)</option>
-            <option value="admin">Admin (Full RBAC Management)</option>
+            <option value="user">Member (Standard Access)</option>
+            <option value="admin">Administrator (Full Access)</option>
           </select>
         </div>
 
         <Input
-          label="Interests (Comma-separated)"
+          label="Interests & Topics (Comma-separated)"
           placeholder="Cybersecurity, Cloud, Devops"
-          helperText="Feeds into interest aggregation analytics"
+          helperText="Topics and interests separated by commas"
           error={errors.interestsRaw?.message}
           {...register('interestsRaw')}
         />

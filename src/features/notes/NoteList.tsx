@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { fetchNotesThunk, createNoteThunk, updateNoteThunk, deleteNoteThunk } from './notesThunks';
 import { NoteCard } from './NoteCard';
 import { NoteFormModal, NoteFormData } from './NoteFormModal';
+import { NoteDetailsModal } from './NoteDetailsModal';
 import { PaginationControl } from '@/components/common/PaginationControl';
 import { SearchBar } from '@/components/common/SearchBar';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
@@ -10,7 +11,7 @@ import { EmptyState } from '@/components/common/EmptyState';
 import { Loader } from '@/components/common/Loader';
 import { Button } from '@/components/ui/Button';
 import { Note } from '@/types/note.types';
-import { Plus, FileText, Sparkles } from 'lucide-react';
+import { Plus, FileText } from 'lucide-react';
 
 export interface NoteListProps {
   isAdminView?: boolean;
@@ -27,6 +28,7 @@ export const NoteList: React.FC<NoteListProps> = ({ isAdminView = false }) => {
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [selectedDetailNote, setSelectedDetailNote] = useState<Note | null>(null);
 
   // Confirm delete dialog state
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
@@ -63,25 +65,25 @@ export const NoteList: React.FC<NoteListProps> = ({ isAdminView = false }) => {
   });
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6 w-full">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/80 pb-5">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              {isAdminView ? 'Global Notes Feed (Admin)' : 'My Encrypted Notes'}
+              {isAdminView ? 'All Notes (Admin)' : 'My Notes'}
             </h1>
             {!isAdminView && (
-              <span className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                <Sparkles className="w-3 h-3 text-emerald-600" />
-                Zero-Knowledge
+              <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+                <FileText className="w-3 h-3 text-emerald-600" />
+                Workspace
               </span>
             )}
           </div>
           <p className="text-sm text-muted-foreground mt-1">
             {isAdminView
-              ? 'View all encrypted notes created across the entire platform with pagination'
-              : 'Manage and search your private notes stored with compound-index query optimization'}
+              ? 'View all notes created across the entire platform'
+              : 'Create, organize, and search your personal notes.'}
           </p>
         </div>
 
@@ -100,18 +102,41 @@ export const NoteList: React.FC<NoteListProps> = ({ isAdminView = false }) => {
                 setEditingNote(null);
                 setIsModalOpen(true);
               }}
-              className="gap-2 shrink-0 font-semibold shadow-md shadow-emerald-700/20"
+              className="gap-1.5 shrink-0 font-semibold shadow-sm"
             >
               <Plus className="w-4 h-4" />
-              <span>Create Note</span>
+              <span>New Note</span>
             </Button>
           )}
         </div>
       </div>
 
+      {/* Inline Quick-Create Bar for Notes */}
+      {!isAdminView && !searchTerm && (
+        <div
+          onClick={() => {
+            setEditingNote(null);
+            setIsModalOpen(true);
+          }}
+          className="cursor-pointer rounded-xl border border-border/80 bg-card p-3.5 shadow-2xs hover:border-emerald-500/40 hover:shadow-md transition-all duration-200"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <Plus className="w-4 h-4" />
+            </div>
+            <div className="flex-1 rounded-lg bg-muted/50 border border-border/60 px-3.5 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Take a quick note or write down an idea...
+            </div>
+            <Button size="sm" className="hidden sm:flex h-8 px-3 text-xs gap-1">
+              <span>Create Note</span>
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Content Area */}
       {isLoading && notes.length === 0 ? (
-        <Loader text="Fetching secure notes..." />
+        <Loader text="Loading your notes..." />
       ) : filteredNotes.length === 0 ? (
         <EmptyState
           icon={FileText}
@@ -119,7 +144,7 @@ export const NoteList: React.FC<NoteListProps> = ({ isAdminView = false }) => {
           description={
             searchTerm
               ? `No notes match your query "${searchTerm}". Try another search term.`
-              : 'You haven’t created any notes yet. Create your first note to get started!'
+              : 'You have not created any notes yet. Create your first note to get started!'
           }
           actionLabel={!isAdminView && !searchTerm ? 'Create First Note' : undefined}
           onAction={() => {
@@ -128,12 +153,13 @@ export const NoteList: React.FC<NoteListProps> = ({ isAdminView = false }) => {
           }}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
           {filteredNotes.map((note) => (
             <NoteCard
               key={note._id}
               note={note}
               isAdminView={isAdminView}
+              onClick={(n) => setSelectedDetailNote(n)}
               onEdit={
                 !isAdminView
                   ? (n) => {
@@ -157,6 +183,31 @@ export const NoteList: React.FC<NoteListProps> = ({ isAdminView = false }) => {
           setPage(1);
         }}
         isLoading={isLoading}
+      />
+
+      {/* Note Details Popup Modal */}
+      <NoteDetailsModal
+        note={selectedDetailNote}
+        isOpen={Boolean(selectedDetailNote)}
+        onClose={() => setSelectedDetailNote(null)}
+        onEdit={
+          !isAdminView
+            ? (n) => {
+                setSelectedDetailNote(null);
+                setEditingNote(n);
+                setIsModalOpen(true);
+              }
+            : undefined
+        }
+        onDelete={
+          !isAdminView
+            ? (id) => {
+                setSelectedDetailNote(null);
+                setDeleteTargetId(id);
+              }
+            : undefined
+        }
+        isAdminView={isAdminView}
       />
 
       {/* Note Form Modal */}

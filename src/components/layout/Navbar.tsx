@@ -83,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </Link>
                 <Link to="/analytics/interests" className={linkClass('/analytics')}>
                   <BarChart3 className="w-4 h-4" />
-                  <span>Analytics</span>
+                  <span>Community</span>
                 </Link>
                 {user?.role === 'admin' && (
                   <Link to="/admin/users" className={linkClass('/admin')}>

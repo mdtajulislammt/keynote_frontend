@@ -106,9 +106,9 @@ export const AppRoutes: React.FC = () => {
         <Route
           path="/analytics/user-posts"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <UserPostsLookupView />
-            </ProtectedRoute>
+            </AdminRoute>
           }
         />
 

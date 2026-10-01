@@ -1,17 +1,16 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAppSelector } from '@/redux/hooks';
 import { BrandLogo } from '@/components/common/BrandLogo';
 import {
   FileText,
-  PlusCircle,
+  Plus,
   Share2,
-  PieChart,
-  Network,
+  Compass,
   Users,
   Files,
+  Settings,
   UserCheck,
-  ShieldCheck,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -23,98 +22,150 @@ export interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { user } = useAppSelector((state) => state.auth);
   const location = useLocation();
+  const navigate = useNavigate();
   const isAdmin = user?.role === 'admin';
 
   const navLinkClasses = (path: string) => {
     const isActive = location.pathname === path || (path !== '/' && location.pathname.startsWith(path + '/'));
     return cn(
-      'flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
+      'group flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150',
       isActive
-        ? 'bg-emerald-600/10 text-emerald-800 dark:text-emerald-300 font-bold shadow-2xs border-l-3 border-emerald-600 pl-3'
-        : 'text-muted-foreground hover:bg-emerald-50/60 dark:hover:bg-emerald-950/30 hover:text-emerald-700 dark:hover:text-emerald-400'
+        ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-semibold'
+        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
     );
   };
 
+  const initials = user?.name
+    ? user.name
+        .split(' ')
+        .map((n) => n[0])
+        .filter(Boolean)
+        .slice(0, 2)
+        .join('')
+        .toUpperCase()
+    : 'U';
+
   const content = (
-    <aside className="w-64 flex flex-col h-full bg-background border-r border-border/80 p-5 space-y-6">
-      {/* Brand & Active Workspace */}
-      <div className="p-3.5 rounded-xl border border-emerald-500/25 bg-emerald-500/5 backdrop-blur-xs space-y-2">
-        <BrandLogo size="sm" asLink={false} />
-        <div className="pt-2 border-t border-emerald-500/15">
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-              User Session
-            </span>
+    <aside className="w-64 flex flex-col h-full bg-background border-r border-border/70 p-4 justify-between select-none">
+      <div className="space-y-6">
+        {/* Mobile Header Brand */}
+        <div className="lg:hidden flex items-center justify-between px-2 pt-1 pb-2 border-b border-border/60">
+          <BrandLogo size="md" />
+        </div>
+
+        {/* Main Navigation */}
+        <div className="space-y-1">
+          <div className="px-3 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
+            Workspace
           </div>
-          <p className="text-sm font-bold truncate text-foreground">{user?.name}</p>
-          <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-        </div>
-      </div>
 
-      {/* Main Feature Navigation */}
-      <div className="space-y-1">
-        <div className="px-3 pb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          Encrypted Notes & Feed
-        </div>
-        <NavLink to="/notes" onClick={onClose} className={navLinkClasses('/notes')}>
-          <FileText className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-          <span>My Notes</span>
-        </NavLink>
-        <NavLink to="/notes/create" onClick={onClose} className={navLinkClasses('/notes/create')}>
-          <PlusCircle className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-          <span>New Note</span>
-        </NavLink>
-        <NavLink to="/posts" onClick={onClose} className={navLinkClasses('/posts')}>
-          <Share2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-          <span>Social Feed</span>
-        </NavLink>
-      </div>
+          {/* Unified Notes + New Note Action */}
+          <div
+            className={cn(
+              'group flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all duration-150',
+              location.pathname.startsWith('/notes')
+                ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-semibold'
+                : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+            )}
+          >
+            <NavLink
+              to="/notes"
+              onClick={onClose}
+              className="flex items-center gap-2.5 flex-1 min-w-0"
+            >
+              <FileText className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <span className="truncate">My Notes</span>
+            </NavLink>
 
-      {/* Analytics Pipelines */}
-      <div className="space-y-1">
-        <div className="px-3 pb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          Aggregation Analytics
-        </div>
-        <NavLink to="/analytics/interests" onClick={onClose} className={navLinkClasses('/analytics/interests')}>
-          <PieChart className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-          <span>Interests Grouping</span>
-        </NavLink>
-        <NavLink to="/analytics/user-posts" onClick={onClose} className={navLinkClasses('/analytics/user-posts')}>
-          <Network className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-          <span>User Posts ($lookup)</span>
-        </NavLink>
-      </div>
-
-      {/* Admin Section (Conditional on role) */}
-      {isAdmin && (
-        <div className="space-y-1 border-t border-border/80 pt-4">
-          <div className="px-3 pb-2 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-            <span>Admin Controls</span>
-            <span className="text-[10px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded">
-              RBAC
-            </span>
+            {/* Quick New Note Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onClose) onClose();
+                navigate('/notes/create');
+              }}
+              className="p-1 rounded-lg hover:bg-emerald-500/20 text-muted-foreground hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+              title="Create New Note"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
           </div>
-          <NavLink to="/admin/users" onClick={onClose} className={navLinkClasses('/admin/users')}>
-            <Users className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-            <span>User Management</span>
+
+          {/* Social Feed */}
+          <NavLink to="/posts" onClick={onClose} className={navLinkClasses('/posts')}>
+            <div className="flex items-center gap-2.5">
+              <Share2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <span>Social Feed</span>
+            </div>
           </NavLink>
-          <NavLink to="/admin/notes" onClick={onClose} className={navLinkClasses('/admin/notes')}>
-            <Files className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-            <span>Global Notes Feed</span>
+
+          {/* Community Topics */}
+          <NavLink to="/analytics/interests" onClick={onClose} className={navLinkClasses('/analytics/interests')}>
+            <div className="flex items-center gap-2.5">
+              <Compass className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <span>Topics & Explore</span>
+            </div>
           </NavLink>
         </div>
-      )}
 
-      {/* Account Section */}
-      <div className="space-y-1 border-t border-border/80 pt-4 mt-auto">
-        <div className="px-3 pb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          Account
-        </div>
-        <NavLink to="/profile" onClick={onClose} className={navLinkClasses('/profile')}>
-          <UserCheck className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-          <span>Profile & Settings</span>
-        </NavLink>
+        {/* Admin Section (Conditional on role) */}
+        {isAdmin && (
+          <div className="space-y-1 pt-2 border-t border-border/60">
+            <div className="px-3 pb-1.5 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
+              <span>Administration</span>
+              <span className="text-[9px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-1.5 py-0.2 rounded">
+                Admin
+              </span>
+            </div>
+
+            <NavLink to="/analytics/user-posts" onClick={onClose} className={navLinkClasses('/analytics/user-posts')}>
+              <div className="flex items-center gap-2.5">
+                <UserCheck className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <span>Member Activity</span>
+              </div>
+            </NavLink>
+
+            <NavLink to="/admin/users" onClick={onClose} className={navLinkClasses('/admin/users')}>
+              <div className="flex items-center gap-2.5">
+                <Users className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <span>Manage Members</span>
+              </div>
+            </NavLink>
+
+            <NavLink to="/admin/notes" onClick={onClose} className={navLinkClasses('/admin/notes')}>
+              <div className="flex items-center gap-2.5">
+                <Files className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <span>All Notes</span>
+              </div>
+            </NavLink>
+          </div>
+        )}
+      </div>
+
+      {/* Modern Bottom Profile Bar */}
+      <div className="pt-3 border-t border-border/70">
+        <Link
+          to="/profile"
+          onClick={onClose}
+          className="flex items-center justify-between p-2 rounded-xl hover:bg-muted/60 transition-colors group cursor-pointer"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-bold text-xs shadow-2xs">
+              {initials}
+            </div>
+            <div className="min-w-0 flex flex-col text-left">
+              <span className="text-xs font-bold text-foreground truncate group-hover:text-emerald-600 transition-colors">
+                {user?.name}
+              </span>
+              <span className="text-[11px] text-muted-foreground truncate">
+                {user?.email}
+              </span>
+            </div>
+          </div>
+
+          <Settings className="w-4 h-4 text-muted-foreground group-hover:text-foreground shrink-0 transition-colors" />
+        </Link>
       </div>
     </aside>
   );
@@ -141,3 +192,4 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     </>
   );
 };
+

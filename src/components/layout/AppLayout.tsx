@@ -40,8 +40,8 @@ export const AppLayout: React.FC = () => {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 flex flex-col min-w-0 p-5 sm:p-7 lg:p-9">
-          <div className="max-w-6xl w-full mx-auto flex-1">
+        <main className="flex-1 flex flex-col min-w-0 p-4 sm:p-6 lg:p-8">
+          <div className="w-full flex-1">
             <Outlet />
           </div>
         </main>
@@ -55,8 +55,9 @@ export const AppLayout: React.FC = () => {
             <span className="font-bold text-emerald-600 dark:text-emerald-400">Keynote</span>
             <span>• Secure Note-Taking & Social Post Platform</span>
           </div>
-          <span className="font-mono text-xs px-2.5 py-1 rounded bg-muted/40 text-muted-foreground">
-            API: http://localhost:5000/api/v1
+          <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 flex items-center gap-1.5 font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            Platform Operational
           </span>
         </div>
       </footer>

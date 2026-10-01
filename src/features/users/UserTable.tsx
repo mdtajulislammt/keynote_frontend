@@ -84,15 +84,15 @@ export const UserTable: React.FC = () => {
   });
 
   return (
-    <div className="space-y-7">
+    <div className="w-full space-y-7">
       {/* Header and Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/80 pb-5">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-            User Management (Admin)
+            User Management
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage user accounts, assign RBAC permissions, and inspect activity
+            Manage member accounts, set access permissions, and view activity
           </p>
         </div>
 
@@ -145,7 +145,7 @@ export const UserTable: React.FC = () => {
           description={
             searchTerm
               ? `No user accounts matched "${searchTerm}".`
-              : 'The user database is currently empty.'
+              : 'No team members have been added yet.'
           }
           actionLabel="Create User"
           onAction={() => {
@@ -206,7 +206,7 @@ export const UserTable: React.FC = () => {
                     <Link
                       to={`/analytics/user-posts?userId=${u._id}`}
                       className="p-1.5 rounded-lg text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors"
-                      title="Inspect user posts ($lookup aggregation)"
+                      title="View member posts and activity"
                     >
                       <ExternalLink className="w-4 h-4" />
                     </Link>
