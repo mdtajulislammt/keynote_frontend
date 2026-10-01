@@ -9,7 +9,6 @@ import { BrandLogo } from '@/components/common/BrandLogo';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
-import { ShieldCheck } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().trim().email('Please enter a valid email address').toLowerCase(),
@@ -33,7 +32,7 @@ export const LoginForm: React.FC = () => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'dev.tajulislam505@gmail.com',
+      email: '',
       password: '',
     },
   });
@@ -69,9 +68,9 @@ export const LoginForm: React.FC = () => {
             )}
 
             <Input
-              label="Admin / User Email"
+              label="Email Address"
               type="email"
-              placeholder="dev.tajulislam505@gmail.com"
+              placeholder="name@example.com"
               error={errors.email?.message}
               {...register('email')}
             />
@@ -92,20 +91,6 @@ export const LoginForm: React.FC = () => {
               Sign In to Keynote
             </Button>
           </form>
-
-          {/* Admin Credentials Quick Hint */}
-          <div className="mt-6 p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-xs space-y-1">
-            <div className="flex items-center gap-1.5 font-bold text-foreground">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>Configured Admin Account:</span>
-            </div>
-            <p className="text-muted-foreground">
-              Email: <code className="font-mono font-semibold text-emerald-700 dark:text-emerald-300">dev.tajulislam505@gmail.com</code> (Role: <span className="font-bold uppercase text-emerald-600">admin</span>)
-            </p>
-            <p className="text-muted-foreground text-[11px]">
-              Use the password you entered when registering this account.
-            </p>
-          </div>
         </CardContent>
 
         <CardFooter className="flex justify-center border-t border-border/80 py-4">

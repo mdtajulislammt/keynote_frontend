@@ -34,7 +34,7 @@ export const RegisterForm: React.FC = () => {
       name: '',
       email: '',
       password: '',
-      interestsRaw: 'Cybersecurity, Cloud Infrastructure, AI Safety',
+      interestsRaw: '',
     },
   });
 
@@ -93,7 +93,7 @@ export const RegisterForm: React.FC = () => {
             <Input
               label="Email Address"
               type="email"
-              placeholder="john@resistance.org"
+              placeholder="you@example.com"
               error={errors.email?.message}
               {...register('email')}
             />
